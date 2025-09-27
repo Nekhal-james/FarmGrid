@@ -52,7 +52,9 @@ FarmGrid is a full-stack web application that connects local farmers with buyers
 ### Backend Setup
 \`\`\`bash
 cd backend
+
 npm install
+
 npm start
 \`\`\`
 
@@ -63,27 +65,6 @@ Open your browser and navigate to `http://localhost:3000`
 
 The frontend files are served statically by the Express server.
 
-## Project Structure
-
-\`\`\`
-/farmgrid
-  /backend
-    server.js           # Main server file
-    schema.sql          # Database schema
-    database.db         # SQLite database (auto-created)
-    package.json        # Backend dependencies
-  /frontend
-    index.html          # Landing page
-    login.html          # Login page
-    signup.html         # Registration page
-    buyer-home.html     # Buyer dashboard
-    seller-home.html    # Seller dashboard
-    farmer-profile.html # Farmer profile management
-    product-detail.html # Product detail with map
-    admin.html          # Admin dashboard
-    style.css           # Global styles
-    script.js           # Global JavaScript
-\`\`\`
 
 ## API Endpoints
 
