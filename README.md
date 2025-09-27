@@ -112,7 +112,7 @@ The frontend files are served statically by the Express server.
 4. Track your sales and earnings on the dashboard
 
 ### For Administrators
-1. Login with admin credentials (admin/admin123)
+1. Login with admin credentials (admin@farmgrid.com/admin123)
 2. Manage users and products
 3. Monitor platform statistics
 4. Manage sponsored advertisements
