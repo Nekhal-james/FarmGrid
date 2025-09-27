@@ -65,28 +65,26 @@ Open your browser and navigate to `http://localhost:3000`
 
 The frontend files are served statically by the Express server.
 
-## Project Structure
-
+Project Structure
 
 /farmgrid
-  /backend
-    server.js           # Main server file
-    schema.sql          # Database schema
-    database.db         # SQLite database (auto-created)
-    package.json        # Backend dependencies
-  /frontend
-    index.html          # Landing page
-    login.html          # Login page
-    signup.html         # Registration page
-    buyer-home.html     # Buyer dashboard
-    seller-home.html    # Seller dashboard
-    farmer-profile.html # Farmer profile management
-    product-detail.html # Product detail with map
-    admin.html          # Admin dashboard
-    style.css           # Global styles
-    script.js           # Global JavaScript
-
-
+├── backend/
+│   ├── server.js          # Main Express server file
+│   ├── schema.sql         # SQL schema for database setup
+│   ├── database.db        # SQLite database file (auto-created)
+│   └── package.json       # Backend dependencies (Node.js)
+│
+└── frontend/
+    ├── index.html         # Main landing page
+    ├── login.html         # User login page
+    ├── signup.html        # User registration page
+    ├── buyer-home.html    # Dashboard for buyers
+    ├── seller-home.html   # Dashboard for sellers (farmers)
+    ├── farmer-profile.html# Page for managing farmer profiles
+    ├── product-detail.html# View details of a specific product
+    ├── admin.html         # Admin panel for platform management
+    ├── style.css          # Global CSS stylesheets
+    └── script.js          # Global JavaScript for client-side logic
 ## API Endpoints
 
 ### Authentication
