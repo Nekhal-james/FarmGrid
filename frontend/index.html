@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmGrid - Connect Local Farmers & Buyers</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <!-- replaced FG text with circular logo image -->
+                    <img src="assets/logo.png" alt="FarmGrid Logo" class="logo-image">
+                    <!-- replaced FarmGrid text with stylized text logo -->
+                    <img src="assets/farmgrid-text.png" alt="FarmGrid" class="logo-text-image">
+                </div>
+                <nav class="nav-links">
+                    <a href="#features">Features</a>
+                    <a href="#how-it-works">How It Works</a>
+                    <a href="login.html" class="btn btn-secondary">Login</a>
+                    <a href="signup.html" class="btn btn-primary">Get Started</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <!-- replaced slide-in-bottom with scroll-fade-in for scroll-triggered animation -->
+        <section class="hero scroll-fade-in" style="padding: 4rem 0; text-align: center;">
+            <div class="container">
+                <!-- replaced fade-in-up with scroll-slide-left for scroll-triggered animation -->
+                <h1 class="scroll-slide-left scroll-stagger-1" style="font-size: 3rem; font-weight: 700; margin-bottom: 1rem; background: linear-gradient(135deg, var(--primary), #16a34a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                    Connect Local Farmers & Buyers
+                </h1>
+                <!-- replaced fade-in-up with scroll-fade-in for scroll-triggered animation -->
+                <p class="scroll-fade-in scroll-stagger-2" style="font-size: 1.25rem; color: var(--muted-foreground); margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                    FarmGrid is the marketplace that brings fresh, local produce directly from farms to your table. Support local agriculture while getting the freshest ingredients.
+                </p>
+                <!-- replaced fade-in-up with scroll-scale-in for scroll-triggered animation -->
+                <div class="scroll-scale-in scroll-stagger-3" style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="signup.html?role=buyer" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1rem;">
+                        Start Buying
+                    </a>
+                    <a href="signup.html?role=seller" class="btn btn-secondary" style="padding: 1rem 2rem; font-size: 1rem;">
+                        Start Selling
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <!-- replaced slide-in-left with scroll-slide-left for scroll-triggered animation -->
+        <section id="features" class="scroll-slide-left" style="padding: 4rem 0; background-color: var(--secondary);">
+            <div class="container">
+                <!-- replaced fade-in-up with scroll-fade-in for scroll-triggered animation -->
+                <h2 class="scroll-fade-in" style="text-align: center; font-size: 2.5rem; font-weight: 700; margin-bottom: 3rem;">
+                    Why Choose FarmGrid?
+                </h2>
+                <div class="grid grid-cols-3">
+                    <!-- replaced fade-in-up with scroll-scale-in for scroll-triggered animation -->
+                    <div class="card scroll-scale-in scroll-stagger-1">
+                        <div style="width: 60px; height: 60px; background-color: var(--primary); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; font-size: 1.5rem;">
+                            🌱
+                        </div>
+                        <h3 class="card-title">Fresh & Local</h3>
+                        <p class="card-description">
+                            Get the freshest produce directly from local farms in your area. Support your community while enjoying better taste and nutrition.
+                        </p>
+                    </div>
+                    <!-- replaced fade-in-up with scroll-scale-in for scroll-triggered animation -->
+                    <div class="card scroll-scale-in scroll-stagger-2">
+                        <div style="width: 60px; height: 60px; background-color: var(--primary); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; font-size: 1.5rem;">
+                            🚚
+                        </div>
+                        <h3 class="card-title">FarmGrid+ Delivery</h3>
+                        <p class="card-description">
+                            Choose convenient delivery with our premium logistics service, or arrange direct pickup from the farm.
+                        </p>
+                    </div>
+                    <!-- replaced fade-in-up with scroll-scale-in for scroll-triggered animation -->
+                    <div class="card scroll-scale-in scroll-stagger-3">
+                        <div style="width: 60px; height: 60px; background-color: var(--primary); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; font-size: 1.5rem;">
+                            🏪
+                        </div>
+                        <h3 class="card-title">Hub Network</h3>
+                        <p class="card-description">
+                            Local shops act as FarmGrid Hubs, helping traditional farmers reach digital markets and manage orders.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <!-- replaced slide-in-right with scroll-slide-right for scroll-triggered animation -->
+        <section id="how-it-works" class="scroll-slide-right" style="padding: 4rem 0;">
+            <div class="container">
+                <!-- replaced fade-in-up with scroll-fade-in for scroll-triggered animation -->
+                <h2 class="scroll-fade-in" style="text-align: center; font-size: 2.5rem; font-weight: 700; margin-bottom: 3rem;">
+                    How FarmGrid Works
+                </h2>
+                <div class="grid grid-cols-2">
+                    <!-- replaced slide-in-left with scroll-slide-left for scroll-triggered animation -->
+                    <div class="scroll-slide-left scroll-stagger-1">
+                        <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: var(--primary);">
+                            For Buyers
+                        </h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="width: 24px; height: 24px; background-color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary-foreground); font-size: 0.75rem; font-weight: 700;">1</span>
+                                Browse fresh produce from local farms
+                            </li>
+                            <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="width: 24px; height: 24px; background-color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary-foreground); font-size: 0.75rem; font-weight: 700;">2</span>
+                                View farm locations on interactive maps
+                            </li>
+                            <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="width: 24px; height: 24px; background-color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary-foreground); font-size: 0.75rem; font-weight: 700;">3</span>
+                                Choose pickup or FarmGrid+ delivery
+                            </li>
+                            <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="width: 24px; height: 24px; background-color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary-foreground); font-size: 0.75rem; font-weight: 700;">4</span>
+                                Enjoy fresh, local produce
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- replaced slide-in-right with scroll-slide-right for scroll-triggered animation -->
+                    <div class="scroll-slide-right scroll-stagger-2">
+                        <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: var(--primary);">
+                            For Farmers
+                        </h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="width: 24px; height: 24px; background-color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary-foreground); font-size: 0.75rem; font-weight: 700;">1</span>
+                                Create your farmer profile
+                            </li>
+                            <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="width: 24px; height: 24px; background-color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary-foreground); font-size: 0.75rem; font-weight: 700;">2</span>
+                                List your produce with photos and prices
+                            </li>
+                            <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="width: 24px; height: 24px; background-color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary-foreground); font-size: 0.75rem; font-weight: 700;">3</span>
+                                Set your farm location on the map
+                            </li>
+                            <li style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="width: 24px; height: 24px; background-color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary-foreground); font-size: 0.75rem; font-weight: 700;">4</span>
+                                Receive orders and grow your business
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <!-- replaced slide-in-bottom with scroll-fade-in for scroll-triggered animation -->
+        <section class="scroll-fade-in" style="padding: 4rem 0; background-color: var(--secondary); text-align: center;">
+            <div class="container">
+                <!-- replaced fade-in-up with scroll-scale-in for scroll-triggered animation -->
+                <h2 class="scroll-scale-in scroll-stagger-1" style="font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem;">
+                    Ready to Get Started?
+                </h2>
+                <!-- replaced fade-in-up with scroll-fade-in for scroll-triggered animation -->
+                <p class="scroll-fade-in scroll-stagger-2" style="font-size: 1.25rem; color: var(--muted-foreground); margin-bottom: 2rem;">
+                    Join thousands of farmers and buyers already using FarmGrid
+                </p>
+                <!-- replaced fade-in-up with scroll-slide-left for scroll-triggered animation -->
+                <div class="scroll-slide-left scroll-stagger-3" style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="signup.html?role=buyer" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1rem;">
+                        Join as Buyer
+                    </a>
+                    <a href="signup.html?role=seller" class="btn btn-secondary" style="padding: 1rem 2rem; font-size: 1rem;">
+                        Join as Farmer
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Sponsored Ads Section -->
+    <!-- replaced slide-in-bottom with scroll-fade-in for scroll-triggered animation -->
+    <section class="ads-section scroll-fade-in">
+        <div class="container">
+            <h3 class="ads-title">Sponsored</h3>
+            <div class="ads-grid" id="ads-container">
+                <!-- Ads will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <footer style="background-color: var(--card); border-top: 1px solid var(--border); padding: 2rem 0; text-align: center;">
+        <div class="container">
+            <div class="logo-section" style="justify-content: center; margin-bottom: 1rem;">
+                <!-- replaced footer logos with images -->
+                <img src="assets/logo.png" alt="FarmGrid Logo" class="logo-image">
+                <img src="assets/farmgrid-text.png" alt="FarmGrid" class="logo-text-image">
+            </div>
+            <p style="color: var(--muted-foreground); font-size: 0.875rem;">
+                © 2025 FarmGrid. Connecting local farmers and buyers.
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+    <script>
+        // Load ads on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAds();
+        });
+
+        async function loadAds() {
+            try {
+                const response = await fetch('/api/ads');
+                const ads = await response.json();
+                
+                const adsContainer = document.getElementById('ads-container');
+                adsContainer.innerHTML = ads.map(ad => `
+                    <div class="ad-card" onclick="window.open('${ad.link}', '_blank')">
+                        <div class="ad-business">${ad.businessName}</div>
+                        <div class="ad-content">${ad.content}</div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading ads:', error);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Dashboard - FarmGrid</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+    <header class="header scroll-fade-in">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <img src="assets/logo.png" alt="FarmGrid Logo" class="logo-image">
+                    <img src="assets/farmgrid-text.png" alt="FarmGrid" class="logo-text-image">
+                </div>
+                <nav class="nav-links">
+                    <a href="seller-home.html">Dashboard</a>
+                    <a href="farmer-profile.html">Profile</a>
+                    <a href="#" onclick="logout()" class="btn btn-secondary">Logout</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main style="padding: 2rem 0;">
+        <div class="container">
+            <div class="scroll-fade-in" style="margin-bottom: 2rem;">
+                <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">
+                    Farmer Dashboard
+                </h1>
+                <p style="color: var(--muted-foreground);">
+                    Manage your products and track your farm's performance
+                </p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid scroll-scale-in scroll-stagger-1">
+                <div class="stat-card">
+                    <span class="stat-value" id="product-count">0</span>
+                    <div class="stat-label">Products Listed</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="order-count">0</span>
+                    <div class="stat-label">Total Orders</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="total-earnings">$0.00</span>
+                    <div class="stat-label">Total Earnings</div>
+                </div>
+            </div>
+
+            <!-- Weather Widget -->
+            <div class="weather-widget scroll-slide-left scroll-stagger-2" id="weather-widget">
+                <div class="loading"></div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card scroll-slide-right scroll-stagger-3" style="margin-bottom: 2rem;">
+                <h2 class="card-title">Quick Actions</h2>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="showAddProductModal()">
+                        Add New Product
+                    </button>
+                    <a href="farmer-profile.html" class="btn btn-secondary">
+                        Edit Profile
+                    </a>
+                    <button class="btn btn-secondary" onclick="refreshData()">
+                        Refresh Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- My Products -->
+            <div class="card scroll-fade-in scroll-stagger-4">
+                <div class="card-header">
+                    <h2 class="card-title">My Products</h2>
+                    <p class="card-description">Manage your product listings</p>
+                </div>
+                <div class="grid grid-cols-2" id="seller-products">
+                    <!-- Products will be loaded here -->
+                </div>
+                
+                <!-- Empty State -->
+                <div id="products-empty-state" class="hidden scroll-scale-in" style="text-align: center; padding: 2rem 0;">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">📦</div>
+                    <h3 style="margin-bottom: 1rem;">No products yet</h3>
+                    <p style="color: var(--muted-foreground); margin-bottom: 1rem;">
+                        Start by adding your first product to the marketplace
+                    </p>
+                    <button class="btn btn-primary" onclick="showAddProductModal()">
+                        Add Your First Product
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Product Modal -->
+    <div id="add-product-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="card-header">
+                <h2 class="card-title">Add New Product</h2>
+                <button onclick="hideAddProductModal()" class="modal-close-btn">×</button>
+            </div>
+            
+            <form id="add-product-form">
+                <div class="form-group">
+                    <label for="product-name" class="form-label">Product Name</label>
+                    <input type="text" id="product-name" name="name" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="product-description" class="form-label">Description</label>
+                    <textarea id="product-description" name="description" class="form-textarea" placeholder="Describe your product..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="product-price" class="form-label">Price ($)</label>
+                    <input type="number" id="product-price" name="price" class="form-input" step="0.01" min="0" required>
+                </div>
+                
+                <!-- Added drag and drop photo upload section -->
+                <div class="form-group">
+                    <label class="form-label">Product Photos</label>
+                    <div id="photo-upload-area" class="photo-upload-area">
+                        <div class="upload-placeholder">
+                            <div class="upload-icon">📷</div>
+                            <p>Drag and drop photos here or click to browse</p>
+                            <p class="upload-hint">Supports JPG, PNG, GIF (max 5MB each)</p>
+                        </div>
+                        <input type="file" id="photo-input" accept="image/*" multiple style="display: none;">
+                    </div>
+                    <div id="photo-preview-container" class="photo-preview-container"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Farm Location (Click on map to set)</label>
+                    <div id="add-product-map" class="map-container"></div>
+                    <input type="hidden" id="product-latitude" name="latitude">
+                    <input type="hidden" id="product-longitude" name="longitude">
+                </div>
+                
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="hideAddProductModal()">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Add Product
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sponsored Ads Section -->
+    <section class="ads-section scroll-fade-in">
+        <div class="container">
+            <h3 class="ads-title">Sponsored</h3>
+            <div class="ads-grid" id="ads-container">
+                <!-- Ads will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+    <script>
+        let addProductMap = null;
+        let selectedLocation = null;
+        let uploadedPhotos = []; // Added array to store uploaded photos
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAds();
+            refreshData();
+            
+            // Set up add product form
+            document.getElementById('add-product-form').addEventListener('submit', handleAddProduct);
+            
+            setupPhotoUpload();
+        });
+
+        function setupPhotoUpload() {
+            const uploadArea = document.getElementById('photo-upload-area');
+            const photoInput = document.getElementById('photo-input');
+            const previewContainer = document.getElementById('photo-preview-container');
+
+            // Click to browse
+            uploadArea.addEventListener('click', () => {
+                photoInput.click();
+            });
+
+            // File input change
+            photoInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+
+            // Drag and drop
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('drag-over');
+            });
+
+            uploadArea.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('drag-over');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('drag-over');
+                handleFiles(e.dataTransfer.files);
+            });
+        }
+
+        function handleFiles(files) {
+            const previewContainer = document.getElementById('photo-preview-container');
+            
+            Array.from(files).forEach(file => {
+                if (file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const photoId = Date.now() + Math.random();
+                        uploadedPhotos.push({
+                            id: photoId,
+                            file: file,
+                            dataUrl: e.target.result
+                        });
+
+                        const photoPreview = document.createElement('div');
+                        photoPreview.className = 'photo-preview';
+                        photoPreview.innerHTML = `
+                            <img src="${e.target.result}" alt="Product photo">
+                            <button type="button" class="remove-photo-btn" onclick="removePhoto(${photoId})">×</button>
+                        `;
+                        previewContainer.appendChild(photoPreview);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    alert('Please select valid image files under 5MB each.');
+                }
+            });
+        }
+
+        function removePhoto(photoId) {
+            uploadedPhotos = uploadedPhotos.filter(photo => photo.id !== photoId);
+            const previewContainer = document.getElementById('photo-preview-container');
+            const photoElements = previewContainer.querySelectorAll('.photo-preview');
+            photoElements.forEach(element => {
+                const img = element.querySelector('img');
+                const photo = uploadedPhotos.find(p => p.dataUrl === img.src);
+                if (!photo) {
+                    element.remove();
+                }
+            });
+        }
+
+        function showAddProductModal() {
+            document.getElementById('add-product-modal').classList.remove('hidden');
+            
+            // Initialize map
+            setTimeout(() => {
+                if (addProductMap) {
+                    addProductMap.remove();
+                }
+                
+                addProductMap = L.map('add-product-map').setView([40.7128, -74.0060], 10);
+                
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(addProductMap);
+                
+                // Add click handler
+                addProductMap.on('click', function(e) {
+                    selectedLocation = e.latlng;
+                    
+                    // Clear existing markers
+                    addProductMap.eachLayer(function(layer) {
+                        if (layer instanceof L.Marker) {
+                            addProductMap.removeLayer(layer);
+                        }
+                    });
+                    
+                    // Add new marker
+                    L.marker([e.latlng.lat, e.latlng.lng]).addTo(addProductMap)
+                        .bindPopup('Product location')
+                        .openPopup();
+                    
+                    // Update hidden inputs
+                    document.getElementById('product-latitude').value = e.latlng.lat;
+                    document.getElementById('product-longitude').value = e.latlng.lng;
+                });
+            }, 100);
+        }
+
+        function hideAddProductModal() {
+            document.getElementById('add-product-modal').classList.add('hidden');
+            document.getElementById('add-product-form').reset();
+            
+            uploadedPhotos = [];
+            document.getElementById('photo-preview-container').innerHTML = '';
+            
+            document.querySelector('#add-product-modal .card-title').textContent = 'Add New Product';
+            document.querySelector('#add-product-form button[type="submit"]').textContent = 'Add Product';
+            delete document.getElementById('add-product-form').dataset.productId;
+            
+            selectedLocation = null;
+            
+            if (addProductMap) {
+                addProductMap.remove();
+                addProductMap = null;
+            }
+        }
+
+        async function handleAddProduct(e) {
+            e.preventDefault();
+            
+            console.log('[v0] Form submitted, currentUser:', currentUser);
+            
+            if (!currentUser) {
+                alert('Please login to add products');
+                return;
+            }
+            
+            const formData = new FormData(e.target);
+            const productId = e.target.dataset.productId;
+            const isEdit = !!productId;
+            
+            const productData = {
+                name: formData.get('name'),
+                description: formData.get('description'),
+                price: parseFloat(formData.get('price')),
+                sellerId: currentUser.id,
+                latitude: parseFloat(formData.get('latitude')) || null,
+                longitude: parseFloat(formData.get('longitude')) || null,
+                photos: uploadedPhotos.map(photo => photo.file)
+            };
+            
+            console.log('[v0] Product data:', productData);
+            
+            try {
+                const url = isEdit ? `/api/products/${productId}` : '/api/products';
+                const method = isEdit ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(productData),
+                });
+                
+                const data = await response.json();
+                console.log('[v0] Server response:', data);
+                
+                if (data.success) {
+                    alert(isEdit ? 'Product updated successfully!' : 'Product added successfully!');
+                    hideAddProductModal();
+                    refreshData();
+                } else {
+                    alert(data.error || `Failed to ${isEdit ? 'update' : 'add'} product`);
+                }
+            } catch (error) {
+                console.error(`${isEdit ? 'Update' : 'Add'} product error:`, error);
+                alert(`Failed to ${isEdit ? 'update' : 'add'} product. Please try again.`);
+            }
+        }
+
+        async function deleteProduct(productId) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                try {
+                    const response = await fetch(`/api/admin/products/${productId}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        alert('Product deleted successfully');
+                        refreshData();
+                    } else {
+                        alert(data.error || 'Delete failed');
+                    }
+                } catch (error) {
+                    console.error('Delete error:', error);
+                    alert('Delete failed. Please try again.');
+                }
+            }
+        }
+
+        function editProduct(productId, name, description, price) {
+            // Populate the form with existing data
+            document.getElementById('product-name').value = name;
+            document.getElementById('product-description').value = description || '';
+            document.getElementById('product-price').value = price;
+            
+            // Change form title and button text
+            document.querySelector('#add-product-modal .card-title').textContent = 'Edit Product';
+            document.querySelector('#add-product-form button[type="submit"]').textContent = 'Update Product';
+            
+            // Store product ID for update
+            document.getElementById('add-product-form').dataset.productId = productId;
+            
+            showAddProductModal();
+        }
+    </script>
+</body>
+</html>

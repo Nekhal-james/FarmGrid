@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - FarmGrid</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Added scroll-fade-in animation to header -->
+    <header class="header scroll-fade-in">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <!-- replaced FG and FarmGrid text with logo images -->
+                    <img src="assets/logo.png" alt="FarmGrid Logo" class="logo-image">
+                    <img src="assets/farmgrid-text.png" alt="FarmGrid" class="logo-text-image">
+                </div>
+                <nav class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="login.html" class="btn btn-secondary">Login</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main style="padding: 4rem 0; min-height: 80vh; display: flex; align-items: center;">
+        <div class="container">
+            <div style="max-width: 400px; margin: 0 auto;">
+                <!-- Added scroll-scale-in animation to signup card -->
+                <div class="card scroll-scale-in">
+                    <div class="card-header text-center">
+                        <h1 class="card-title" style="font-size: 2rem;">Join FarmGrid</h1>
+                        <p class="card-description">Create your account to start buying or selling fresh produce</p>
+                    </div>
+                    
+                    <form id="signup-form">
+                        <div class="form-group">
+                            <label for="fullName" class="form-label">Full Name</label>
+                            <input type="text" id="fullName" name="fullName" class="form-input" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" id="email" name="email" class="form-input" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" id="password" name="password" class="form-input" required minlength="6">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="phoneNumber" class="form-label">Phone Number</label>
+                            <input type="tel" id="phoneNumber" name="phoneNumber" class="form-input" required placeholder="e.g., +1 (555) 123-4567">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="role" class="form-label">I want to:</label>
+                            <select id="role" name="role" class="form-select" required onchange="toggleLocationField()">
+                                <option value="">Select your role</option>
+                                <option value="buyer">Buy fresh produce</option>
+                                <option value="seller">Sell my farm produce</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" id="location-field" style="display: none;">
+                            <label for="shopLocation" class="form-label">Shop/Farm Location</label>
+                            <input type="text" id="shopLocation" name="shopLocation" class="form-input" placeholder="e.g., 123 Farm Road, Springfield, IL">
+                            <small style="color: var(--muted-foreground); font-size: 0.75rem; margin-top: 0.25rem; display: block;">
+                                Enter your farm or shop address for buyers to find you
+                            </small>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;">
+                            Create Account
+                        </button>
+                    </form>
+                    
+                    <div style="text-align: center; padding-top: 1rem; border-top: 1px solid var(--border);">
+                        <p style="color: var(--muted-foreground); font-size: 0.875rem;">
+                            Already have an account? 
+                            <a href="login.html" style="color: var(--primary); text-decoration: none;">Sign in here</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Sponsored Ads Section -->
+    <!-- Added scroll-fade-in animation to ads section -->
+    <section class="ads-section scroll-fade-in">
+        <div class="container">
+            <h3 class="ads-title">Sponsored</h3>
+            <div class="ads-grid" id="ads-container">
+                <!-- Ads will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+    <script>
+        // Load ads on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAds();
+            
+            document.getElementById('signup-form').addEventListener('submit', handleSignup);
+        });
+
+        function toggleLocationField() {
+            const role = document.getElementById('role').value;
+            const locationField = document.getElementById('location-field');
+            const shopLocationInput = document.getElementById('shopLocation');
+            
+            if (role === 'seller') {
+                locationField.style.display = 'block';
+                shopLocationInput.required = true;
+            } else {
+                locationField.style.display = 'none';
+                shopLocationInput.required = false;
+                shopLocationInput.value = '';
+            }
+        }
+
+        async function handleSignup(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const userData = {
+                fullName: formData.get('fullName'),
+                email: formData.get('email'),
+                password: formData.get('password'),
+                phoneNumber: formData.get('phoneNumber'),
+                role: formData.get('role'),
+                shopLocation: formData.get('shopLocation') || null
+            };
+            
+            try {
+                const response = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(userData),
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Account created successfully! Please log in.');
+                    window.location.href = 'login.html';
+                } else {
+                    alert(data.error || 'Signup failed. Please try again.');
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                alert('Signup failed. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>

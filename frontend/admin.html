@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - FarmGrid</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Added scroll-fade-in animation to header -->
+    <header class="header scroll-fade-in">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <img src="assets/logo.png" alt="FarmGrid Logo" class="logo-image">
+                    <img src="assets/farmgrid-text.png" alt="FarmGrid" class="logo-text-image">
+                </div>
+                <nav class="nav-links">
+                    <a href="admin.html">Admin Dashboard</a>
+                    <a href="#" onclick="logout()" class="btn btn-secondary">Logout</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main style="padding: 2rem 0;">
+        <div class="container">
+            <!-- Added scroll-fade-in animation to page title -->
+            <div class="scroll-fade-in" style="margin-bottom: 2rem;">
+                <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">
+                    Admin Dashboard
+                </h1>
+                <p style="color: var(--muted-foreground);">
+                    Manage users, products, and platform content
+                </p>
+            </div>
+
+            <!-- Admin Stats -->
+            <!-- Added scroll-scale-in animation to stats grid -->
+            <div class="stats-grid scroll-scale-in scroll-stagger-1" style="margin-bottom: 3rem;">
+                <div class="stat-card">
+                    <span class="stat-value" id="total-users">0</span>
+                    <div class="stat-label">Total Users</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="total-products">0</span>
+                    <div class="stat-label">Total Products</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="total-orders">0</span>
+                    <div class="stat-label">Total Orders</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="total-ads">0</span>
+                    <div class="stat-label">Active Ads</div>
+                </div>
+            </div>
+
+            <!-- Admin Tabs -->
+            <!-- Added scroll-fade-in animation to tabs -->
+            <div class="scroll-fade-in scroll-stagger-2" style="margin-bottom: 2rem;">
+                <div style="display: flex; gap: 0.5rem; border-bottom: 1px solid var(--border);">
+                    <button class="admin-tab active" onclick="showTab('users')" id="users-tab">
+                        Users Management
+                    </button>
+                    <button class="admin-tab" onclick="showTab('products')" id="products-tab">
+                        Products Management
+                    </button>
+                    <button class="admin-tab" onclick="showTab('ads')" id="ads-tab">
+                        Ads Management
+                    </button>
+                </div>
+            </div>
+
+            <!-- Users Management Tab -->
+            <!-- Added scroll-slide-up animation to content sections -->
+            <div id="users-content" class="admin-content scroll-slide-up scroll-stagger-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Users Management</h2>
+                        <p class="card-description">View and manage all platform users</p>
+                    </div>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <input type="text" placeholder="Search users..." class="form-input" style="max-width: 300px;" id="users-search">
+                    </div>
+                    
+                    <div class="grid grid-cols-1" id="users-container">
+                        <div class="loading" style="text-align: center; padding: 2rem;">
+                            Loading users...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Management Tab -->
+            <div id="products-content" class="admin-content hidden scroll-slide-up scroll-stagger-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Products Management</h2>
+                        <p class="card-description">View and manage all product listings</p>
+                    </div>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <input type="text" placeholder="Search products..." class="form-input" style="max-width: 300px;" id="products-search">
+                    </div>
+                    
+                    <div class="grid grid-cols-2" id="admin-products">
+                        <div class="loading" style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+                            Loading products...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ads Management Tab -->
+            <div id="ads-content" class="admin-content hidden scroll-slide-up scroll-stagger-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Sponsored Ads Management</h2>
+                        <p class="card-description">Manage sponsored advertisements displayed across the platform</p>
+                    </div>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <button class="btn btn-primary" onclick="showAddAdModal()">
+                            Add New Ad
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1" id="ads-list">
+                        <div class="loading" style="text-align: center; padding: 2rem;">
+                            Loading ads...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Ad Modal -->
+    <div id="add-ad-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="card-header">
+                <h2 class="card-title">Add New Advertisement</h2>
+                <button onclick="hideAddAdModal()" class="modal-close-btn">×</button>
+            </div>
+            
+            <form id="add-ad-form">
+                <div class="form-group">
+                    <label for="ad-business-name" class="form-label">Business Name</label>
+                    <input type="text" id="ad-business-name" name="businessName" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ad-content" class="form-label">Ad Content</label>
+                    <textarea id="ad-content" name="content" class="form-textarea" placeholder="Write your advertisement content..." required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ad-link" class="form-label">Website Link (optional)</label>
+                    <input type="url" id="ad-link" name="link" class="form-input" placeholder="https://example.com">
+                </div>
+                
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="hideAddAdModal()">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Add Advertisement
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        let allUsers = [];
+        let allProducts = [];
+        let allAds = [];
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAdminData();
+            
+            // Set up search functionality
+            document.getElementById('users-search').addEventListener('input', debounce(searchUsers, 300));
+            document.getElementById('products-search').addEventListener('input', debounce(searchProducts, 300));
+            
+            // Set up add ad form
+            document.getElementById('add-ad-form').addEventListener('submit', handleAddAd);
+        });
+
+        async function loadAdminData() {
+            await Promise.all([
+                loadAllUsers(),
+                loadAllProducts(),
+                loadAllAds(),
+                loadAdminStats()
+            ]);
+        }
+
+        async function loadAdminStats() {
+            try {
+                // Get counts from loaded data
+                document.getElementById('total-users').textContent = allUsers.length;
+                document.getElementById('total-products').textContent = allProducts.length;
+                document.getElementById('total-ads').textContent = allAds.length;
+                
+                // Mock orders count
+                document.getElementById('total-orders').textContent = Math.floor(Math.random() * 100) + 50;
+            } catch (error) {
+                console.error('Error loading admin stats:', error);
+            }
+        }
+
+        async function loadAllUsers() {
+            try {
+                const response = await fetch('/api/admin/users');
+                allUsers = await response.json();
+                displayUsers(allUsers);
+            } catch (error) {
+                console.error('Error loading users:', error);
+                document.getElementById('users-container').innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--destructive);">
+                        Error loading users. Please try again later.
+                    </div>
+                `;
+            }
+        }
+
+        async function loadAllProducts() {
+            try {
+                const response = await fetch('/api/products');
+                allProducts = await response.json();
+                displayProducts(allProducts);
+            } catch (error) {
+                console.error('Error loading products:', error);
+                document.getElementById('admin-products').innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--destructive);">
+                        Error loading products. Please try again later.
+                    </div>
+                `;
+            }
+        }
+
+        async function loadAllAds() {
+            try {
+                const response = await fetch('/api/ads');
+                allAds = await response.json();
+                displayAds(allAds);
+            } catch (error) {
+                console.error('Error loading ads:', error);
+                document.getElementById('ads-list').innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--destructive);">
+                        Error loading ads. Please try again later.
+                    </div>
+                `;
+            }
+        }
+
+        function displayUsers(users) {
+            const container = document.getElementById('users-container');
+            
+            if (users.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem;">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">👥</div>
+                        <h3>No users found</h3>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = users.map(user => `
+                <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h3 style="margin-bottom: 0.5rem;">${user.fullName}</h3>
+                        <p style="color: var(--muted-foreground); margin-bottom: 0.25rem;">
+                            📧 ${user.email}
+                        </p>
+                        <p style="color: var(--muted-foreground); font-size: 0.875rem;">
+                            Role: <span style="background-color: var(--primary); color: var(--primary-foreground); padding: 0.25rem 0.5rem; border-radius: calc(var(--radius) / 2); font-size: 0.75rem;">${user.role}</span>
+                        </p>
+                    </div>
+                    <div>
+                        ${user.role !== 'admin' ? `<button class="btn btn-destructive" onclick="deleteUser(${user.id})">Delete</button>` : '<span style="color: var(--muted-foreground); font-size: 0.875rem;">Protected</span>'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayProducts(products) {
+            const container = document.getElementById('admin-products');
+            
+            if (products.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">📦</div>
+                        <h3>No products found</h3>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = products.map(product => `
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                        <h3 style="flex: 1; margin: 0;">${product.name}</h3>
+                        <div style="color: var(--primary); font-weight: 700;">$${product.price}</div>
+                    </div>
+                    <p style="color: var(--muted-foreground); margin-bottom: 1rem; font-size: 0.875rem;">
+                        ${product.description || 'No description available'}
+                    </p>
+                    <div style="margin-bottom: 1rem;">
+                        <div style="font-size: 0.875rem; color: var(--muted-foreground);">
+                            Seller: ${product.sellerName}
+                        </div>
+                        <div style="font-size: 0.875rem; color: var(--muted-foreground);">
+                            Farm: ${product.farmName || 'Not specified'}
+                        </div>
+                    </div>
+                    <button class="btn btn-destructive" onclick="deleteProductAdmin(${product.id})">
+                        Delete Product
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function displayAds(ads) {
+            const container = document.getElementById('ads-list');
+            
+            if (ads.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem;">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">📢</div>
+                        <h3>No ads found</h3>
+                        <p style="color: var(--muted-foreground);">Add your first advertisement to get started</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = ads.map(ad => `
+                <div class="card" style="display: flex; justify-content: space-between; align-items: start;">
+                    <div style="flex: 1;">
+                        <h3 style="margin-bottom: 0.5rem;">${ad.businessName}</h3>
+                        <p style="color: var(--muted-foreground); margin-bottom: 0.5rem;">
+                            ${ad.content}
+                        </p>
+                        ${ad.link ? `<a href="${ad.link}" target="_blank" style="color: var(--primary); font-size: 0.875rem; text-decoration: none;">🔗 ${ad.link}</a>` : ''}
+                    </div>
+                    <div style="margin-left: 1rem;">
+                        <button class="btn btn-destructive" onclick="deleteAd(${ad.id})">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showTab(tabName) {
+            // Hide all content
+            document.querySelectorAll('.admin-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.admin-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected content and activate tab
+            document.getElementById(`${tabName}-content`).classList.remove('hidden');
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+
+        function searchUsers() {
+            const searchTerm = document.getElementById('users-search').value.toLowerCase();
+            const filteredUsers = allUsers.filter(user => 
+                user.fullName.toLowerCase().includes(searchTerm) ||
+                user.email.toLowerCase().includes(searchTerm) ||
+                user.role.toLowerCase().includes(searchTerm)
+            );
+            displayUsers(filteredUsers);
+        }
+
+        function searchProducts() {
+            const searchTerm = document.getElementById('products-search').value.toLowerCase();
+            const filteredProducts = allProducts.filter(product => 
+                product.name.toLowerCase().includes(searchTerm) ||
+                (product.description && product.description.toLowerCase().includes(searchTerm)) ||
+                product.sellerName.toLowerCase().includes(searchTerm) ||
+                (product.farmName && product.farmName.toLowerCase().includes(searchTerm))
+            );
+            displayProducts(filteredProducts);
+        }
+
+        function showAddAdModal() {
+            document.getElementById('add-ad-modal').classList.remove('hidden');
+        }
+
+        function hideAddAdModal() {
+            document.getElementById('add-ad-modal').classList.add('hidden');
+            document.getElementById('add-ad-form').reset();
+        }
+
+        async function handleAddAd(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const adData = {
+                businessName: formData.get('businessName'),
+                content: formData.get('content'),
+                link: formData.get('link') || null
+            };
+            
+            try {
+                // Mock API call since we don't have a create ad endpoint
+                // In a real app, you'd call: await fetch('/api/ads', { method: 'POST', ... })
+                
+                // Simulate success
+                alert('Advertisement added successfully!');
+                hideAddAdModal();
+                
+                // Add to local array and refresh display
+                const newAd = {
+                    id: Date.now(),
+                    ...adData
+                };
+                allAds.unshift(newAd);
+                displayAds(allAds);
+                loadAdminStats();
+                
+            } catch (error) {
+                console.error('Add ad error:', error);
+                alert('Failed to add advertisement. Please try again.');
+            }
+        }
+
+        async function deleteAd(adId) {
+            if (confirm('Are you sure you want to delete this advertisement?')) {
+                try {
+                    // Mock deletion since we don't have a delete ad endpoint
+                    allAds = allAds.filter(ad => ad.id !== adId);
+                    displayAds(allAds);
+                    loadAdminStats();
+                    alert('Advertisement deleted successfully');
+                } catch (error) {
+                    console.error('Delete ad error:', error);
+                    alert('Delete failed. Please try again.');
+                }
+            }
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+    </script>
+
+    <style>
+        .admin-tab {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            color: var(--muted-foreground);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .admin-tab:hover {
+            color: var(--foreground);
+        }
+
+        .admin-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .admin-content {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Added proper modal styling */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.hidden {
+            display: none !important;
+        }
+
+        .modal-content {
+            width: 90%;
+            max-width: 500px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--muted-foreground);
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: calc(var(--radius) / 2);
+            transition: all 0.2s;
+        }
+
+        .modal-close-btn:hover {
+            background-color: var(--muted);
+            color: var(--foreground);
+        }
+    </style>
+</body>
+</html>

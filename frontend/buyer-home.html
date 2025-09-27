@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buyer Dashboard - FarmGrid</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+    <header class="header scroll-fade-in">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <img src="assets/logo.png" alt="FarmGrid Logo" class="logo-image">
+                    <img src="assets/farmgrid-text.png" alt="FarmGrid" class="logo-text-image">
+                </div>
+                <nav class="nav-links">
+                    <a href="buyer-home.html">Dashboard</a>
+                    <a href="#" onclick="logout()" class="btn btn-secondary">Logout</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main style="padding: 2rem 0;">
+        <div class="container">
+            <div class="scroll-fade-in" style="margin-bottom: 2rem;">
+                <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">
+                    Fresh Produce Marketplace
+                </h1>
+                <p style="color: var(--muted-foreground);">
+                    Discover fresh, local produce from farms in your area
+                </p>
+            </div>
+
+            <!-- Weather Widget -->
+            <div class="weather-widget scroll-slide-left scroll-stagger-1" id="weather-widget">
+                <div class="loading"></div>
+            </div>
+
+            <!-- Search and Filters -->
+            <div class="card scroll-slide-right scroll-stagger-2" style="margin-bottom: 2rem;">
+                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                    <input type="text" placeholder="Search products..." class="form-input" style="flex: 1; min-width: 200px;" id="search-input">
+                    <select class="form-select" style="min-width: 150px;" id="sort-select">
+                        <option value="newest">Newest First</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="name">Name A-Z</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="searchProducts()">Search</button>
+                </div>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="grid grid-cols-3 scroll-fade-in scroll-stagger-3" id="products-container">
+                <div class="loading" style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+                    Loading products...
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden scroll-scale-in" style="text-align: center; padding: 4rem 0;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🌾</div>
+                <h3 style="margin-bottom: 1rem;">No products found</h3>
+                <p style="color: var(--muted-foreground);">
+                    Try adjusting your search or check back later for new listings
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Sponsored Ads Section -->
+    <section class="ads-section scroll-fade-in">
+        <div class="container">
+            <h3 class="ads-title">Sponsored</h3>
+            <div class="ads-grid" id="ads-container">
+                <!-- Ads will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+    <script>
+        let allProducts = [];
+
+        // Load ads and products on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAds();
+            loadProducts();
+            
+            // Set up search functionality
+            document.getElementById('search-input').addEventListener('input', debounce(searchProducts, 300));
+            document.getElementById('sort-select').addEventListener('change', searchProducts);
+        });
+
+        async function loadAds() {
+            try {
+                const response = await fetch('/api/ads');
+                const ads = await response.json();
+                
+                const adsContainer = document.getElementById('ads-container');
+                adsContainer.innerHTML = ads.map(ad => `
+                    <div class="ad-card" onclick="window.open('${ad.link}', '_blank')">
+                        <div class="ad-business">${ad.businessName}</div>
+                        <div class="ad-content">${ad.content}</div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading ads:', error);
+            }
+        }
+
+        async function loadProducts() {
+            try {
+                const response = await fetch('/api/products');
+                allProducts = await response.json();
+                displayProducts(allProducts);
+            } catch (error) {
+                console.error('Error loading products:', error);
+                document.getElementById('products-container').innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--destructive);">
+                        Error loading products. Please try again later.
+                    </div>
+                `;
+            }
+        }
+
+        function displayProducts(products) {
+            const container = document.getElementById('products-container');
+            const emptyState = document.getElementById('empty-state');
+            
+            if (products.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            container.innerHTML = products.map(product => `
+                <div class="product-card" onclick="viewProduct(${product.id})">
+                    <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 1rem;">
+                        <h3 style="flex: 1; margin: 0;">${product.name}</h3>
+                        <div class="product-price" style="margin: 0;">$${product.price}</div>
+                    </div>
+                    <p style="color: var(--muted-foreground); margin-bottom: 1rem; font-size: 0.875rem;">
+                        ${product.description || 'Fresh produce from local farm'}
+                    </p>
+                    <div class="product-location" style="margin-bottom: 1rem;">
+                        📍 ${product.farmName || product.sellerName}
+                    </div>
+                    <div style="color: var(--muted-foreground); margin-bottom: 1rem; font-size: 0.875rem;">
+                        📞 ${product.sellerPhone || 'Contact via platform'}
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <span style="background-color: var(--secondary); color: var(--secondary-foreground); padding: 0.25rem 0.5rem; border-radius: calc(var(--radius) / 2); font-size: 0.75rem;">
+                            Fresh
+                        </span>
+                        <span style="background-color: var(--primary); color: var(--primary-foreground); padding: 0.25rem 0.5rem; border-radius: calc(var(--radius) / 2); font-size: 0.75rem;">
+                            Local
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function searchProducts() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const sortBy = document.getElementById('sort-select').value;
+            
+            let filteredProducts = allProducts.filter(product => 
+                product.name.toLowerCase().includes(searchTerm) ||
+                (product.description && product.description.toLowerCase().includes(searchTerm)) ||
+                (product.farmName && product.farmName.toLowerCase().includes(searchTerm)) ||
+                product.sellerName.toLowerCase().includes(searchTerm)
+            );
+            
+            // Sort products
+            switch (sortBy) {
+                case 'price-low':
+                    filteredProducts.sort((a, b) => a.price - b.price);
+                    break;
+                case 'price-high':
+                    filteredProducts.sort((a, b) => b.price - a.price);
+                    break;
+                case 'name':
+                    filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+                case 'newest':
+                default:
+                    filteredProducts.sort((a, b) => b.id - a.id);
+                    break;
+            }
+            
+            displayProducts(filteredProducts);
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+    </script>
+</body>
+</html>

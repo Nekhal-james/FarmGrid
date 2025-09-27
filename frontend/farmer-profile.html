@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Profile - FarmGrid</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+    <!-- Added scroll-fade-in animation to header -->
+    <header class="header scroll-fade-in">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <!-- replaced FG and FarmGrid text with logo images -->
+                    <img src="assets/logo.png" alt="FarmGrid Logo" class="logo-image">
+                    <img src="assets/farmgrid-text.png" alt="FarmGrid" class="logo-text-image">
+                </div>
+                <nav class="nav-links">
+                    <a href="seller-home.html">Dashboard</a>
+                    <a href="farmer-profile.html">Profile</a>
+                    <a href="#" onclick="logout()" class="btn btn-secondary">Logout</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main style="padding: 2rem 0;">
+        <div class="container">
+            <!-- Added scroll-fade-in animation to page title -->
+            <div class="scroll-fade-in" style="margin-bottom: 2rem;">
+                <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">
+                    Farmer Profile
+                </h1>
+                <p style="color: var(--muted-foreground);">
+                    Update your farm information and location to help buyers find you
+                </p>
+            </div>
+
+            <div class="grid grid-cols-2" style="gap: 3rem;">
+                <!-- Profile Form -->
+                <!-- Added scroll-slide-left animation to profile form -->
+                <div class="scroll-slide-left scroll-stagger-1">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Farm Information</h2>
+                            <p class="card-description">Tell buyers about your farm and products</p>
+                        </div>
+                        
+                        <form id="profile-form">
+                            <div class="form-group">
+                                <label for="farm-name" class="form-label">Farm Name</label>
+                                <input type="text" id="farm-name" name="farmName" class="form-input" placeholder="e.g., Green Valley Farm">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="contact-info" class="form-label">Phone No</label>
+                                <input type="text" id="contact-info" name="contactInfo" class="form-input" placeholder="Your phone number">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="bio" class="form-label">About Your Farm</label>
+                                <textarea id="bio" name="bio" class="form-textarea" placeholder="Tell buyers about your farming practices, specialties, and what makes your produce special..." rows="6"></textarea>
+                            </div>
+                            
+                            <!-- Hidden location inputs -->
+                            <input type="hidden" id="latitude" name="latitude">
+                            <input type="hidden" id="longitude" name="longitude">
+                            
+                            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                                <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                                    Reset
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    Save Profile
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Farm Location Map -->
+                <!-- Added scroll-slide-right animation to map section -->
+                <div class="scroll-slide-right scroll-stagger-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Farm Location</h2>
+                            <p class="card-description">Click on the map to set your farm's location</p>
+                        </div>
+                        
+                        <div id="profile-map" class="map-container"></div>
+                        
+                        <div style="margin-top: 1rem; padding: 1rem; background-color: var(--secondary); border-radius: var(--radius);">
+                            <h4 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">
+                                Why set your location?
+                            </h4>
+                            <ul style="font-size: 0.875rem; color: var(--muted-foreground); margin: 0; padding-left: 1rem;">
+                                <li>Help buyers find local produce</li>
+                                <li>Show your farm on product detail pages</li>
+                                <li>Enable location-based search</li>
+                                <li>Build trust with transparency</li>
+                            </ul>
+                        </div>
+                        
+                        <div id="location-status" class="hidden" style="margin-top: 1rem; padding: 0.75rem; background-color: var(--primary); color: var(--primary-foreground); border-radius: var(--radius); font-size: 0.875rem;">
+                            📍 Farm location set successfully!
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Preview -->
+            <!-- Added scroll-fade-in animation to profile preview -->
+            <div class="card scroll-fade-in scroll-stagger-3" style="margin-top: 3rem;">
+                <div class="card-header">
+                    <h2 class="card-title">Profile Preview</h2>
+                    <p class="card-description">This is how your profile will appear to buyers</p>
+                </div>
+                
+                <div id="profile-preview" style="padding: 1.5rem; background-color: var(--secondary); border-radius: var(--radius);">
+                    <div style="margin-bottom: 1rem;">
+                        <h3 id="preview-farm-name" style="color: var(--primary); margin-bottom: 0.5rem;">
+                            Your Farm Name
+                        </h3>
+                        <div id="preview-contact" style="color: var(--muted-foreground); font-size: 0.875rem;">
+                            Phone number will appear here
+                        </div>
+                    </div>
+                    <div id="preview-bio" style="color: var(--foreground); line-height: 1.6;">
+                        Your farm description will appear here. Tell buyers about your farming practices, specialties, and what makes your produce special.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Sponsored Ads Section -->
+    <!-- Added scroll-fade-in animation to ads section -->
+    <section class="ads-section scroll-fade-in">
+        <div class="container">
+            <h3 class="ads-title">Sponsored</h3>
+            <div class="ads-grid" id="ads-container">
+                <!-- Ads will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+    <script>
+        let profileMap = null;
+        let currentMarker = null;
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAds();
+            initializeProfilePage();
+            
+            // Set up form listeners
+            document.getElementById('profile-form').addEventListener('submit', handleProfileUpdate);
+            
+            // Set up preview updates
+            document.getElementById('farm-name').addEventListener('input', updatePreview);
+            document.getElementById('contact-info').addEventListener('input', updatePreview);
+            document.getElementById('bio').addEventListener('input', updatePreview);
+        });
+
+        async function loadAds() {
+            try {
+                const response = await fetch('/api/ads');
+                const ads = await response.json();
+                
+                const adsContainer = document.getElementById('ads-container');
+                adsContainer.innerHTML = ads.map(ad => `
+                    <div class="ad-card" onclick="window.open('${ad.link}', '_blank')">
+                        <div class="ad-business">${ad.businessName}</div>
+                        <div class="ad-content">${ad.content}</div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading ads:', error);
+            }
+        }
+
+        async function initializeProfilePage() {
+            // Initialize map
+            profileMap = L.map('profile-map').setView([40.7128, -74.0060], 10);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(profileMap);
+            
+            // Add click handler for setting location
+            profileMap.on('click', function(e) {
+                setFarmLocation(e.latlng.lat, e.latlng.lng);
+            });
+            
+            // Load existing profile data
+            await loadExistingProfile();
+        }
+
+        async function loadExistingProfile() {
+            try {
+                const response = await fetch(`/api/users/${currentUser.id}`);
+                const data = await response.json();
+                
+                if (data.profile) {
+                    const profile = data.profile;
+                    
+                    // Fill form fields
+                    document.getElementById('farm-name').value = profile.farmName || '';
+                    document.getElementById('contact-info').value = profile.contactInfo || '';
+                    document.getElementById('bio').value = profile.bio || '';
+                    document.getElementById('latitude').value = profile.latitude || '';
+                    document.getElementById('longitude').value = profile.longitude || '';
+                    
+                    // Set map location if available
+                    if (profile.latitude && profile.longitude) {
+                        setFarmLocation(profile.latitude, profile.longitude, false);
+                        profileMap.setView([profile.latitude, profile.longitude], 13);
+                    }
+                    
+                    // Update preview
+                    updatePreview();
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+            }
+        }
+
+        function setFarmLocation(lat, lng, showStatus = true) {
+            // Remove existing marker
+            if (currentMarker) {
+                profileMap.removeLayer(currentMarker);
+            }
+            
+            // Add new marker
+            currentMarker = L.marker([lat, lng]).addTo(profileMap)
+                .bindPopup('Your Farm Location')
+                .openPopup();
+            
+            // Update hidden inputs
+            document.getElementById('latitude').value = lat;
+            document.getElementById('longitude').value = lng;
+            
+            // Show status message
+            if (showStatus) {
+                const statusEl = document.getElementById('location-status');
+                statusEl.classList.remove('hidden');
+                setTimeout(() => {
+                    statusEl.classList.add('hidden');
+                }, 3000);
+            }
+        }
+
+        function updatePreview() {
+            const farmName = document.getElementById('farm-name').value || 'Your Farm Name';
+            const contactInfo = document.getElementById('contact-info').value || 'Phone number will appear here';
+            const bio = document.getElementById('bio').value || 'Your farm description will appear here. Tell buyers about your farming practices, specialties, and what makes your produce special.';
+            
+            document.getElementById('preview-farm-name').textContent = farmName;
+            document.getElementById('preview-contact').textContent = contactInfo;
+            document.getElementById('preview-bio').textContent = bio;
+        }
+
+        async function handleProfileUpdate(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const profileData = {
+                userId: currentUser.id,
+                farmName: formData.get('farmName'),
+                contactInfo: formData.get('contactInfo'),
+                bio: formData.get('bio'),
+                latitude: parseFloat(formData.get('latitude')) || null,
+                longitude: parseFloat(formData.get('longitude')) || null
+            };
+            
+            try {
+                const response = await fetch('/api/farmer-profile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(profileData),
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Show success message
+                    const button = e.target.querySelector('button[type="submit"]');
+                    const originalText = button.textContent;
+                    button.textContent = 'Saved!';
+                    button.style.backgroundColor = 'var(--primary)';
+                    
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.backgroundColor = '';
+                    }, 2000);
+                } else {
+                    alert(data.error || 'Profile update failed');
+                }
+            } catch (error) {
+                console.error('Profile update error:', error);
+                alert('Profile update failed. Please try again.');
+            }
+        }
+
+        function resetForm() {
+            if (confirm('Are you sure you want to reset all changes?')) {
+                loadExistingProfile();
+            }
+        }
+    </script>
+</body>
+</html>

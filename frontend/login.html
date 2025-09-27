@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - FarmGrid</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header scroll-fade-in">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <img src="assets/logo.png" alt="FarmGrid Logo" class="logo-image">
+                    <img src="assets/farmgrid-text.png" alt="FarmGrid" class="logo-text-image">
+                </div>
+                <nav class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="signup.html" class="btn btn-primary">Sign Up</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main style="padding: 4rem 0; min-height: 80vh; display: flex; align-items: center;">
+        <div class="container">
+            <div style="max-width: 400px; margin: 0 auto;">
+                <!-- Added scroll-scale-in animation to login card -->
+                <div class="card scroll-scale-in">
+                    <div class="card-header text-center">
+                        <h1 class="card-title" style="font-size: 2rem;">Welcome Back</h1>
+                        <p class="card-description">Sign in to your FarmGrid account</p>
+                    </div>
+                    
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" id="email" name="email" class="form-input" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" id="password" name="password" class="form-input" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;">
+                            Sign In
+                        </button>
+                    </form>
+                    
+                    <div style="text-align: center; padding-top: 1rem; border-top: 1px solid var(--border);">
+                        <p style="color: var(--muted-foreground); font-size: 0.875rem;">
+                            Don't have an account? 
+                            <a href="signup.html" style="color: var(--primary); text-decoration: none;">Sign up here</a>
+                        </p>
+                    </div>
+                    
+                    <div style="margin-top: 1.5rem; padding: 1rem; background-color: var(--secondary); border-radius: var(--radius);">
+                        <h3 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">Demo Accounts:</h3>
+                        <p style="font-size: 0.75rem; color: var(--muted-foreground); margin-bottom: 0.5rem;">
+                            <strong>Admin:</strong> admin / admin123
+                        </p>
+                        <p style="font-size: 0.75rem; color: var(--muted-foreground);">
+                            Or create a new buyer/seller account
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Sponsored Ads Section -->
+    <!-- Added scroll-fade-in animation to ads section -->
+    <section class="ads-section scroll-fade-in">
+        <div class="container">
+            <h3 class="ads-title">Sponsored</h3>
+            <div class="ads-grid" id="ads-container">
+                <!-- Ads will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+    <script>
+        // Load ads on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAds();
+        });
+
+        async function loadAds() {
+            try {
+                const response = await fetch('/api/ads');
+                const ads = await response.json();
+                
+                const adsContainer = document.getElementById('ads-container');
+                adsContainer.innerHTML = ads.map(ad => `
+                    <div class="ad-card" onclick="window.open('${ad.link}', '_blank')">
+                        <div class="ad-business">${ad.businessName}</div>
+                        <div class="ad-content">${ad.content}</div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading ads:', error);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - FarmGrid</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+    <!-- Added scroll-fade-in animation to header -->
+    <header class="header scroll-fade-in">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <!-- replaced FG and FarmGrid text with logo images -->
+                    <img src="assets/logo.png" alt="FarmGrid Logo" class="logo-image">
+                    <img src="assets/farmgrid-text.png" alt="FarmGrid" class="logo-text-image">
+                </div>
+                <nav class="nav-links">
+                    <a href="buyer-home.html">Back to Marketplace</a>
+                    <a href="#" onclick="logout()" class="btn btn-secondary">Logout</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main style="padding: 2rem 0;">
+        <div class="container">
+            <div class="grid grid-cols-2" style="gap: 3rem;">
+                <!-- Product Information -->
+                <!-- Added scroll-slide-left animation to product info -->
+                <div class="scroll-slide-left scroll-stagger-1">
+                    <div class="card">
+                        <div style="margin-bottom: 2rem;">
+                            <h1 id="product-name" style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem;">
+                                Loading...
+                            </h1>
+                            <div id="product-price" style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 1rem;">
+                                $0.00
+                            </div>
+                            <p id="product-description" style="color: var(--muted-foreground); line-height: 1.6;">
+                                Loading product details...
+                            </p>
+                        </div>
+                        
+                        <!-- Purchase Options -->
+                        <div style="border-top: 1px solid var(--border); padding-top: 2rem;">
+                            <h3 style="margin-bottom: 1rem;">Purchase Options</h3>
+                            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                <button id="buy-in-person" class="btn btn-secondary" style="justify-content: flex-start; text-align: left; padding: 1rem;">
+                                    <div>
+                                        <div style="font-weight: 600; margin-bottom: 0.25rem;">🤝 Direct Purchase</div>
+                                        <div style="font-size: 0.875rem; color: var(--muted-foreground);">
+                                            Contact seller directly for pickup arrangements
+                                        </div>
+                                    </div>
+                                </button>
+                                <button id="buy-farmgrid-plus" class="btn btn-primary" style="justify-content: flex-start; text-align: left; padding: 1rem;">
+                                    <div>
+                                        <div style="font-weight: 600; margin-bottom: 0.25rem;">🚚 FarmGrid+ Delivery</div>
+                                        <div style="font-size: 0.875rem; color: var(--primary-foreground); opacity: 0.9;">
+                                            Premium delivery service - we handle pickup and delivery
+                                        </div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seller Information & Map -->
+                <div>
+                    <!-- Seller Info -->
+                    <!-- Added scroll-slide-right animation to seller info -->
+                    <div class="card scroll-slide-right scroll-stagger-2" style="margin-bottom: 2rem;">
+                        <h3 style="margin-bottom: 1rem;">Seller Information</h3>
+                        <div style="margin-bottom: 1rem;">
+                            <div style="font-weight: 600; margin-bottom: 0.25rem;">Farmer</div>
+                            <div id="seller-name" style="color: var(--muted-foreground);">Loading...</div>
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <div style="font-weight: 600; margin-bottom: 0.25rem;">Farm</div>
+                            <div id="farm-name" style="color: var(--muted-foreground);">Loading...</div>
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <div style="font-weight: 600; margin-bottom: 0.25rem;">Contact</div>
+                            <div id="seller-email" style="color: var(--muted-foreground);">Loading...</div>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 0.25rem;">About the Farm</div>
+                            <div id="seller-bio" style="color: var(--muted-foreground); font-size: 0.875rem; line-height: 1.5;">
+                                Loading farm information...
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Farm Location Map -->
+                    <!-- Added scroll-scale-in animation to map -->
+                    <div class="card scroll-scale-in scroll-stagger-3">
+                        <h3 style="margin-bottom: 1rem;">Farm Location</h3>
+                        <div id="product-map" class="map-container"></div>
+                        <p style="font-size: 0.875rem; color: var(--muted-foreground); margin-top: 0.5rem;">
+                            📍 Click the marker for more details
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Sponsored Ads Section -->
+    <!-- Added scroll-fade-in animation to ads section -->
+    <section class="ads-section scroll-fade-in">
+        <div class="container">
+            <h3 class="ads-title">Sponsored</h3>
+            <div class="ads-grid" id="ads-container">
+                <!-- Ads will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+    <script>
+        // Load ads and product details on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAds();
+        });
+
+        async function loadAds() {
+            try {
+                const response = await fetch('/api/ads');
+                const ads = await response.json();
+                
+                const adsContainer = document.getElementById('ads-container');
+                adsContainer.innerHTML = ads.map(ad => `
+                    <div class="ad-card" onclick="window.open('${ad.link}', '_blank')">
+                        <div class="ad-business">${ad.businessName}</div>
+                        <div class="ad-content">${ad.content}</div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading ads:', error);
+            }
+        }
+    </script>
+</body>
+</html>
